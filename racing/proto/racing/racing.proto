@@ -41,6 +41,11 @@ message SortOptions {
   SortOrder sortorder = 2;
 }
 
+enum Status {
+  STATUS_UNKNOWN = 0;
+  OPEN = 1;
+  CLOSED = 2;
+}
 /* Resources */
 
 // A race resource.
@@ -57,5 +62,7 @@ message Race {
   bool visible = 5;
   // AdvertisedStartTime is the time the race is advertised to run.
   google.protobuf.Timestamp advertised_start_time = 6;
+  // Status of the Race - Whether Closed or Open
+  Status status = 7;
 }
 

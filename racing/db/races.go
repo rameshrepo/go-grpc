@@ -126,7 +126,11 @@ func (m *racesRepo) scanRaces(
 
 			return nil, err
 		}
-
+		if advertisedStart.IsZero() != true && advertisedStart.After(time.Now()) {
+			race.Status = racing.Status_OPEN
+		} else {
+			race.Status = racing.Status_CLOSED
+		}
 		ts, err := ptypes.TimestampProto(advertisedStart)
 		if err != nil {
 			return nil, err
