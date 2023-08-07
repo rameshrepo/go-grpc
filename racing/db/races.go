@@ -18,7 +18,8 @@ type RacesRepo interface {
 	Init() error
 
 	// List will return a list of races.
-	List(filter *racing.ListRacesRequestFilter) ([]*racing.Race, error)
+	//List(filter *racing.ListRacesRequestFilter) ([]*racing.Race, error)
+	List(in *racing.ListRacesRequest) ([]*racing.Race, error)
 }
 
 type racesRepo struct {
@@ -43,7 +44,7 @@ func (r *racesRepo) Init() error {
 	return err
 }
 
-func (r *racesRepo) List(filter *racing.ListRacesRequestFilter) ([]*racing.Race, error) {
+func (r *racesRepo) List(in *racing.ListRacesRequest) ([]*racing.Race, error) {
 	var (
 		err   error
 		query string
@@ -52,8 +53,8 @@ func (r *racesRepo) List(filter *racing.ListRacesRequestFilter) ([]*racing.Race,
 
 	query = getRaceQueries()[racesList]
 
-	query, args = r.applyFilter(query, filter)
-
+	query, args = r.applyFilter(query, in.Filter)
+	query = r.applySorting(query, in.Sortoptions)
 	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -92,6 +93,21 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 	}
 
 	return query, args
+}
+
+func (r *racesRepo) applySorting(query string, sortoptions []*racing.SortOptions) string {
+	var sort []string
+	if sortoptions != nil {
+		for _, s := range sortoptions {
+			if s.Sortorder == racing.SortOrder_SORT_DESC {
+				sort = append(sort, s.Field+" "+"DESC")
+			} else if s.Sortorder == racing.SortOrder_SORT_ASC {
+				sort = append(sort, s.Field+" "+"ASC")
+			}
+		}
+		query += " ORDER BY " + strings.Join(sort, ",")
+	}
+	return query
 }
 
 func (m *racesRepo) scanRaces(

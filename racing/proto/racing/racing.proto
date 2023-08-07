@@ -15,6 +15,7 @@ service Racing {
 
 message ListRacesRequest {
   ListRacesRequestFilter filter = 1;
+  repeated SortOptions sortoptions = 2;
 }
 
 // Response to ListRaces call.
@@ -26,6 +27,18 @@ message ListRacesResponse {
 message ListRacesRequestFilter {
   repeated int64 meeting_ids = 1;
   google.protobuf.BoolValue visible = 2;
+}
+
+// Sort Order for SQL fields
+enum SortOrder {
+  SORT_UNSPECIFIED = 0;
+  SORT_ASC = 1;
+  SORT_DESC = 2;
+}
+
+message SortOptions {
+  string field = 1;
+  SortOrder sortorder = 2;
 }
 
 /* Resources */
