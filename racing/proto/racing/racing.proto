@@ -9,6 +9,9 @@ import "google/protobuf/wrappers.proto";
 service Racing {
   // ListRaces will return a collection of all races.
   rpc ListRaces(ListRacesRequest) returns (ListRacesResponse) {}
+
+  // Get Race by ID
+  rpc GetRace(GetRaceRequest) returns (GetRaceResponse) {}
 }
 
 /* Requests/Responses */
@@ -21,6 +24,16 @@ message ListRacesRequest {
 // Response to ListRaces call.
 message ListRacesResponse {
   repeated Race races = 1;
+}
+
+// Request for Single Race by ID
+message GetRaceRequest {
+  google.protobuf.Int64Value race_id = 1;
+}
+
+// Response for Single Race by ID
+message GetRaceResponse {
+  Race race = 1;
 }
 
 // Filter for listing races.
