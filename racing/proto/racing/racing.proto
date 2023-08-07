@@ -4,6 +4,7 @@ package racing;
 option go_package = "/racing";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 service Racing {
   // ListRaces will return a collection of all races.
@@ -24,6 +25,7 @@ message ListRacesResponse {
 // Filter for listing races.
 message ListRacesRequestFilter {
   repeated int64 meeting_ids = 1;
+  google.protobuf.BoolValue visible = 2;
 }
 
 /* Resources */
