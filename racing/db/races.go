@@ -20,6 +20,9 @@ type RacesRepo interface {
 	// List will return a list of races.
 	//List(filter *racing.ListRacesRequestFilter) ([]*racing.Race, error)
 	List(in *racing.ListRacesRequest) ([]*racing.Race, error)
+
+	// Get a Race by identifier
+	GetRace(filter *racing.GetRaceRequest) (*racing.Race, error)
 }
 
 type racesRepo struct {
@@ -61,6 +64,27 @@ func (r *racesRepo) List(in *racing.ListRacesRequest) ([]*racing.Race, error) {
 	}
 
 	return r.scanRaces(rows)
+}
+
+func (r *racesRepo) GetRace(filter *racing.GetRaceRequest) (*racing.Race, error) {
+	var query string
+	query = getRaceQueries()[racesList]
+	if filter.RaceId != nil {
+		query = query + " WHERE id = ?"
+		rows, err := r.db.Query(query, filter.RaceId.GetValue())
+		if err != nil {
+			return nil, err
+		}
+		races, err := r.scanRaces(rows)
+		if err != nil {
+			return nil, err
+		}
+		if len(races) == 1 {
+			return races[0], nil
+		}
+		return &racing.Race{}, nil
+	}
+	return &racing.Race{}, nil
 }
 
 func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFilter) (string, []interface{}) {
